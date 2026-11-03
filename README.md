@@ -11,6 +11,12 @@ Summary: Exact evaluation of Wigner 3j, 6j, 9j symbols, Clebsch-Gordan, Racah W,
 
 Development: https://github.com/susilehtola/libwignernj
 
+Documentation: https://github.com/susilehtola/libwignernj/blob/main/docs/reference.md
+
+libwignernj evaluates Wigner 3j, 6j and 9j symbols, Clebsch-Gordan,
+Racah W, Fano X and Gaunt coefficients exactly via prime factorization,
+with C, C++ and Fortran 2003 interfaces.
+
 Current build status
 ====================
 
