@@ -1,3 +1,5 @@
+schema_version: 1
+
 context:
   version: "0.8.0"
 
@@ -10,7 +12,7 @@ source:
   sha256: 7220cea92652040d6456aba92ff151124d9c69ce8695840490c18dd25a0da80c
 
 build:
-  number: 0
+  number: 1
   script:
     - if: unix
       then: |
@@ -27,7 +29,7 @@ build:
         fi
         cmake --install build
       else: |
-        cmake -S . -B build -G Ninja %CMAKE_ARGS% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DWIGNERNJ_BUILD_FORTRAN=OFF -DWIGNERNJ_BUILD_LTO=OFF -DWIGNERNJ_BUILD_EXAMPLES=OFF
+        cmake -S . -B build -G Ninja %CMAKE_ARGS% -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DWIGNERNJ_BUILD_FORTRAN=OFF -DWIGNERNJ_BUILD_LTO=OFF -DWIGNERNJ_BUILD_EXAMPLES=OFF -DWIGNERNJ_BUILD_TESTS=ON
         if errorlevel 1 exit 1
         cmake --build build --parallel %CPU_COUNT%
         if errorlevel 1 exit 1
@@ -45,6 +47,9 @@ requirements:
     - ${{ stdlib("c") }}
     - cmake
     - ninja
+  ignore_run_exports:
+    from_package:
+      - ${{ compiler("cxx") }}
   run_exports:
     - ${{ pin_subpackage("libwignernj", upper_bound="x.x") }}
 
@@ -55,15 +60,33 @@ tests:
         - wignernj.hpp
       lib:
         - wignernj
+        - if: unix
+          then: wignernj_f03
       files:
         - if: unix
-          then: lib/pkgconfig/libwignernj.pc
+          then:
+            - lib/pkgconfig/libwignernj.pc
+            - lib/pkgconfig/libwignernj_f03.pc
+            - lib/cmake/wignernj/wignernjConfig.cmake
+            - lib/cmake/wignernj/wignernjConfigVersion.cmake
+            - lib/cmake/wignernj/wignernjTargets.cmake
+            - include/wignernj/fortran/wignernj.mod
+          else:
+            - Library/lib/pkgconfig/libwignernj.pc
+            - Library/lib/cmake/wignernj/wignernjConfig.cmake
+            - Library/lib/cmake/wignernj/wignernjConfigVersion.cmake
+            - Library/lib/cmake/wignernj/wignernjTargets.cmake
 
 about:
   homepage: https://github.com/susilehtola/libwignernj
   summary: Exact evaluation of Wigner 3j, 6j, 9j symbols, Clebsch-Gordan, Racah W, Fano X and Gaunt coefficients
+  description: |
+    libwignernj evaluates Wigner 3j, 6j and 9j symbols, Clebsch-Gordan,
+    Racah W, Fano X and Gaunt coefficients exactly via prime factorization,
+    with C, C++ and Fortran 2003 interfaces.
   license: BSD-3-Clause
   license_file: LICENSE
+  documentation: https://github.com/susilehtola/libwignernj/blob/main/docs/reference.md
   repository: https://github.com/susilehtola/libwignernj
 
 extra:
